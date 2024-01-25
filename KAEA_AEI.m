@@ -16,11 +16,11 @@ upper_bound = 5.12*ones(1,num_vari);
 % number of current generation
 generation = 1;
 % generate random samples
-sample_x = lhsdesign(num_initial, num_vari,'criterion','maximin','iterations',1000).*(upper_bound - lower_bound) + lower_bound;
+sample_x = lhsdesign(num_initial,num_vari,'criterion','maximin','iterations',1000).*(upper_bound - lower_bound) + lower_bound;
 sample_y = feval(fun_name,sample_x);
 evaluation =  size(sample_x,1);
 % best objectives in each generation
-fmin_record = zeros(max_evaluation - evaluation + 1,1);
+fmin_record = zeros(max_evaluation-evaluation+1,1);
 % the first DE population
 [~,index] = sort(sample_y);
 pop_vari = sample_x(index(1:pop_size),:);
@@ -43,7 +43,7 @@ while evaluation < max_evaluation
         pop_mutation(ii,:) = xmin + F*(pop_vari(r(1),:)-pop_vari(r(2),:));
         % check the bound constraints, randomly re-initialization
         if any(pop_mutation(ii,:)<lower_bound) || any(pop_mutation(ii,:)>upper_bound)
-            pop_mutation(ii,:) = lower_bound + rand(1,num_vari).*(upper_bound-lower_bound);
+            pop_mutation(ii,:) = lower_bound+rand(1,num_vari).*(upper_bound-lower_bound);
         end
     end
     % crossover
@@ -56,7 +56,7 @@ while evaluation < max_evaluation
     pop_trial = pop_mutation.*mui + pop_vari.*(1-mui);
     % select infill samples
     [u,s] = Kriging_Predictor(pop_trial,kriging_model);
-    AEI = (pop_obj-u).*gausscdf((pop_obj-u)./s)+s.*gausspdf((pop_obj-u)./s);
+    AEI = (pop_obj-u).*normcdf((pop_obj-u)./s)+s.*normpdf((pop_obj-u)./s);
     [~,sort_ind] = sort(AEI,'descend');
     select_ind = sort_ind(1:num_q);
     infill_x = pop_trial(select_ind,:);

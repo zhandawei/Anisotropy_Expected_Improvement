@@ -13,11 +13,11 @@ upper_bound = 5.12*ones(1,num_vari);
 % number of current generation
 generation = 1;
 % generate random samples
-sample_x = lhsdesign(num_initial, num_vari,'criterion','maximin','iterations',1000).*(upper_bound - lower_bound) + lower_bound;
+sample_x = lhsdesign(num_initial,num_vari,'criterion','maximin','iterations',1000).*(upper_bound-lower_bound)+lower_bound;
 sample_y = feval(fun_name,sample_x);
 evaluation =  size(sample_x,1);
 % best objectives in each generation
-fmin_record = zeros(max_evaluation - evaluation + 1,1);
+fmin_record = zeros(max_evaluation-evaluation+1,1);
 % the first DE population
 [~,index] = sort(sample_y);
 pop_vari = sample_x(index(1:pop_size),:);
@@ -53,7 +53,7 @@ while evaluation < max_evaluation
     pop_trial = pop_mutation.*mui + pop_vari.*(1-mui);
     % select infill samples
     [u,s] = Kriging_Predictor(pop_trial,kriging_model);
-    EI = (fmin-u).*gausscdf((fmin-u)./s)+s.*gausspdf((fmin-u)./s);
+    EI = (fmin-u).*normcdf((fmin-u)./s)+s.*normpdf((fmin-u)./s);
     [~,sort_ind] = sort(EI,'descend');
     select_ind = sort_ind(1:num_q);
     infill_x = pop_trial(select_ind,:);
